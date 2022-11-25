@@ -6,7 +6,6 @@ import io.micronaut.inject.qualifiers.Qualifiers;
 import io.micronaut.runtime.event.annotation.EventListener;
 import jakarta.inject.Singleton;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
-public class LevelActionManager implements Listener {
+public class LevelActionManager {
 
     private final Map<Player, Collection<AbstractLevelAction>> playerActions = new ConcurrentHashMap<>();
 
