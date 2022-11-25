@@ -1,7 +1,8 @@
 package club.devcord.gamejam.devmarkt_working_group.fortmord;
 
-import club.devcord.gamejam.devmarkt_working_group.fortmord.event.OnDisableEvent;
-import club.devcord.gamejam.devmarkt_working_group.fortmord.event.OnEnableEvent;
+import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnDisableEvent;
+import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnEnableEvent;
+import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.MicronautJavaPlugin;
 import io.micronaut.runtime.event.annotation.EventListener;
 import jakarta.inject.Singleton;
 

@@ -1,9 +1,9 @@
-package club.devcord.gamejam.devmarkt_working_group.fortmord;
+package club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper;
 
-import club.devcord.gamejam.devmarkt_working_group.fortmord.event.BukkitEvent;
-import club.devcord.gamejam.devmarkt_working_group.fortmord.event.OnEnableEvent;
-import club.devcord.gamejam.devmarkt_working_group.fortmord.event.OnLoadEvent;
-import club.devcord.gamejam.devmarkt_working_group.fortmord.event.OnDisableEvent;
+import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.BukkitEvent;
+import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnEnableEvent;
+import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnLoadEvent;
+import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnDisableEvent;
 
 import io.micronaut.context.ApplicationContext;
 import org.bukkit.event.Listener;
