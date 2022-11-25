@@ -3,3 +3,7 @@ version: 1
 api-version: 1.19
 authors: [Taucher2003, Goldmensch]
 main: club.devcord.gamejam.devmarkt_working_group.fortmord.FortMord
+
+commands:
+  test:
+    description: Testing
