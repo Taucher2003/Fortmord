@@ -18,9 +18,12 @@ public abstract class AbstractLevelAction {
     private final Player player;
     private final FortMord fortMord;
 
-    public AbstractLevelAction(@Parameter Player player, FortMord fortMord) {
+    private int level;
+
+    public AbstractLevelAction(@Parameter Player player, FortMord fortMord, int level) {
         this.player = player;
         this.fortMord = fortMord;
+        this.level = level;
     }
 
     public Player player() {
@@ -29,6 +32,14 @@ public abstract class AbstractLevelAction {
 
     public FortMord fortMord() {
         return fortMord;
+    }
+
+    public int level() {
+        return level;
+    }
+
+    public void level(int level) {
+        this.level = level;
     }
 
     public BukkitTask runTaskTimer(Runnable runnable, long delay, long period) throws IllegalArgumentException {

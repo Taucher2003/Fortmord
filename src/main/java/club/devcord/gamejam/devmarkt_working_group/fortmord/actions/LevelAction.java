@@ -7,4 +7,6 @@ import io.micronaut.core.annotation.Introspected;
 @Introspected
 public @interface LevelAction {
     int value();
+
+    boolean levelBound() default false;
 }
