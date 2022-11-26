@@ -35,7 +35,7 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
         var index = 0D;
         put(++index, Material.ACACIA_WOOD, Material.BIRCH_WOOD, Material.DARK_OAK_WOOD, Material.JUNGLE_WOOD, Material.MANGROVE_WOOD, Material.OAK_WOOD, Material.SPRUCE_WOOD);
         put(++index, Material.COBBLESTONE, Material.COBBLED_DEEPSLATE);
-        put(++index, Material.LEATHER);
+        put(++index, Material.RABBIT_HIDE);
         put(++index, Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE, Material.RAW_IRON, Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE, Material.RAW_GOLD);
         put(++index, Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE);
         put(++index, Material.ACACIA_WOOD, Material.BIRCH_WOOD, Material.DARK_OAK_WOOD, Material.JUNGLE_WOOD, Material.MANGROVE_WOOD, Material.OAK_WOOD, Material.SPRUCE_WOOD);
@@ -73,16 +73,16 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
     }
 
     private double calculateBase(Material material) {
-        if(recipeCache.containsKey(material)) {
-            return recipeCache.get(material);
-        }
-
         var result = calculateBase(material, EnumSet.noneOf(Material.class));
         recipeCache.put(material, result);
         return result;
     }
 
     private double calculateBase(Material material, Set<Material> knownNodes) {
+        if(recipeCache.containsKey(material)) {
+            return recipeCache.get(material);
+        }
+
         if(knownNodes.contains(material)) {
             return 0D;
         }
@@ -90,22 +90,23 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
 
         return server.getRecipesFor(new ItemStack(material))
                 .stream()
-                .filter(recipe -> {
-                    var name = material.name().replace("_INGOT", "_BLOCK");
-                    var blockMaterial = Material.getMaterial(name);
-                    if (recipe instanceof ShapelessRecipe shapelessRecipe) {
-                        return shapelessRecipe.getChoiceList()
-                                .stream()
-                                .noneMatch(recipeChoice -> recipeChoice.test(new ItemStack(blockMaterial)));
-                    }
-                    return true;
-                })
+                .filter(recipe -> isNoBlockOf(recipe, material))
                 .sorted((recipe, recipe1) -> recipe.equals(recipe1) ? 0 : recipe instanceof CookingRecipe<?> ? -1 :  1)
+                .limit(1)
                 .flatMap(this::ingredientsForRecipe)
                 .mapToDouble(m -> calculateBase(m.getType(), knownNodes) * m.getAmount())
-                .filter(value -> value > 0)
-                .limit(1)
                 .sum();
+    }
+
+    private boolean isNoBlockOf(Recipe recipe, Material material) {
+        var name = material.name().replace("_INGOT", "_BLOCK");
+        var blockMaterial = Material.getMaterial(name);
+        if (recipe instanceof ShapelessRecipe shapelessRecipe && blockMaterial != null) {
+            return shapelessRecipe.getChoiceList()
+                    .stream()
+                    .noneMatch(recipeChoice -> recipeChoice.test(new ItemStack(blockMaterial)));
+        }
+        return true;
     }
 
     private Stream<ItemStack> ingredientsForRecipe(Recipe recipe){
@@ -114,8 +115,7 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
             return Stream.of(cookingRecipe.getInputChoice().getItemStack());
         }
         if(recipe instanceof MerchantRecipe merchantRecipe) {
-            return merchantRecipe.getIngredients()
-                    .stream();
+            return merchantRecipe.getIngredients().stream();
         }
         if(recipe instanceof SmithingRecipe smithingRecipe) {
             return Stream.of(smithingRecipe.getBase().getItemStack(), smithingRecipe.getAddition().getItemStack());
@@ -127,7 +127,21 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
             return shapedRecipe.getChoiceMap().values()
                     .stream()
                     .filter(Objects::nonNull)
-                    .map(RecipeChoice::getItemStack);
+                    .map(RecipeChoice::getItemStack)
+                    .reduce(new EnumMap<Material, ItemStack>(Material.class), (map, itemStack) -> {
+                        var type = itemStack.getType();
+                        var inserted = map.putIfAbsent(type, itemStack) != null;
+                        var stack = map.get(type);
+                        if (inserted) {
+                            stack.setAmount(stack.getAmount() + itemStack.getAmount());
+                        }
+                        return map;
+                    }, (map1, map2) -> {
+                        map1.putAll(map2);
+                        return map1;
+                    })
+                    .values()
+                    .stream();
         }
         if(recipe instanceof ShapelessRecipe shapelessRecipe) {
             return shapelessRecipe.getChoiceList()
