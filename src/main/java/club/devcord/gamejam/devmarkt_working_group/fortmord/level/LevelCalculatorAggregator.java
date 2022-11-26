@@ -20,6 +20,6 @@ public class LevelCalculatorAggregator implements LevelCalculator {
         return Arrays.stream(calculators)
                 .map(calculator -> calculator.calculate(player) * calculator.weight())
                 .reduce(0D, Double::sum)
-                .intValue();
+                .intValue() & 0xFF;
     }
 }

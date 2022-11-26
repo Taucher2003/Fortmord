@@ -39,8 +39,9 @@ public class LevelUpdater {
 
     private void updateForPlayer(Player player) {
         var oldLevel = currentPlayerLevels.getOrDefault(player, 0);
-        var newLevel = calculator.calculate(player) & 0xFF;
+        var newLevel = calculator.calculate(player);
         if(oldLevel != newLevel) {
+            currentPlayerLevels.put(player, newLevel);
             var event = new LevelChangeEvent(player, newLevel);
             context.getEventPublisher(LevelChangeEvent.class).publishEvent(event);
         }

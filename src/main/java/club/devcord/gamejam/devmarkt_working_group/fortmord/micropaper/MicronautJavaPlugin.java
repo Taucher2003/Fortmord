@@ -28,7 +28,7 @@ public class MicronautJavaPlugin extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {
+    public final void onEnable() {
         context.getBeansOfType(Listener.class)
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
         context.getBeansOfType(CommandExecutor.class, Qualifiers.byStereotype(McCommand.class))
@@ -51,7 +51,7 @@ public class MicronautJavaPlugin extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
+    public final void onDisable() {
         publishEvent(new OnDisableEvent(), OnDisableEvent.class);
         context.close();
     }

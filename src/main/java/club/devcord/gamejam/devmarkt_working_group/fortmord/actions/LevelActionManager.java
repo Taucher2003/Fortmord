@@ -32,7 +32,6 @@ public class LevelActionManager {
         var level = event.newLevel();
         var player = event.player();
         for (var action : applicationContext.getBeanDefinitions(AbstractLevelAction.class)) {
-            log.info("bean defintion {}", action.getBeanType());
             var actionClass = action.getBeanType();
             var requiredLevel = action.getAnnotation(LevelAction.class).intValue().orElseThrow();
             var levelBound = action.getAnnotation(LevelAction.class).booleanValue("levelBound").orElseThrow();
