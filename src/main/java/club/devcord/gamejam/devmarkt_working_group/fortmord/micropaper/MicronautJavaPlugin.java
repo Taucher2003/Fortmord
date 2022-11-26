@@ -7,6 +7,7 @@ import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnE
 import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnLoadEvent;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.inject.qualifiers.Qualifiers;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,7 +31,7 @@ public class MicronautJavaPlugin extends JavaPlugin {
     public void onEnable() {
         context.getBeansOfType(Listener.class)
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
-        context.getBeansOfType(TabExecutor.class, Qualifiers.byStereotype(McCommand.class))
+        context.getBeansOfType(CommandExecutor.class, Qualifiers.byStereotype(McCommand.class))
                         .forEach(command -> {
                             var beanDefinition = context.getBeanDefinition(command.getClass());
                             var commandName = beanDefinition.stringValue(McCommand.class).orElseThrow();
@@ -40,7 +41,9 @@ public class MicronautJavaPlugin extends JavaPlugin {
                                         .formatted(commandName));
                             }
                             pluginCommand.setExecutor(command);
-                            pluginCommand.setTabCompleter(command);
+                            if (command instanceof TabExecutor tabExecutor) {
+                                pluginCommand.setTabCompleter(tabExecutor);
+                            }
                         });
 
 

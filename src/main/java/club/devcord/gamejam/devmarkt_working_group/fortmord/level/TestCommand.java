@@ -4,17 +4,14 @@ import club.devcord.gamejam.devmarkt_working_group.fortmord.LevelCalculator;
 import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.command.McCommand;
 import io.micronaut.context.ApplicationContext;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 
 @McCommand("test")
-public class TestCommand implements TabExecutor {
+public class TestCommand implements CommandExecutor {
 
     private final LevelCalculator calculator;
     private final ApplicationContext context;
@@ -36,10 +33,5 @@ public class TestCommand implements TabExecutor {
         }
 
         return false;
-    }
-
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
     }
 }
