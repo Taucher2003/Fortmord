@@ -35,6 +35,8 @@ public class LevelCalculatorImpl implements LevelCalculator {
         put(++index, Material.IRON_BOOTS, Material.IRON_LEGGINGS, Material.IRON_CHESTPLATE, Material.IRON_HELMET);
         put(++index, Material.DIAMOND_AXE, Material.DIAMOND_PICKAXE, Material.DIAMOND_SWORD);
         put(++index, Material.DIAMOND_BOOTS, Material.DIAMOND_LEGGINGS, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_HELMET);
+        put(++index, Material.NETHERITE_AXE, Material.NETHERITE_PICKAXE, Material.NETHERITE_SWORD);
+        put(++index, Material.NETHERITE_BOOTS, Material.NETHERITE_LEGGINGS, Material.NETHERITE_CHESTPLATE, Material.NETHERITE_HELMET);
     }
 
     private static void put(Double level, Material... materials) {
@@ -46,9 +48,9 @@ public class LevelCalculatorImpl implements LevelCalculator {
     private double calculateItem(ItemStack item) {
         double result = BASE_LEVELS.getOrDefault(item.getType(), 0D);
 
-        result += item.getAmount() * 0.1;
+        result += item.getAmount() * 0.2;
 
-        result += item.getEnchantments().values().stream().mapToDouble(level -> level * 0.25).reduce(0, Double::sum);
+        result += item.getEnchantments().values().stream().mapToDouble(level -> level * 0.5).reduce(0, Double::sum);
 
         return result;
     }
