@@ -1,11 +1,13 @@
 package club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper;
 
+import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.command.McCommand;
 import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.BukkitEvent;
+import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnDisableEvent;
 import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnEnableEvent;
 import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnLoadEvent;
-import club.devcord.gamejam.devmarkt_working_group.fortmord.micropaper.event.OnDisableEvent;
-
 import io.micronaut.context.ApplicationContext;
+import io.micronaut.inject.qualifiers.Qualifiers;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,6 +30,18 @@ public class MicronautJavaPlugin extends JavaPlugin {
     public void onEnable() {
         context.getBeansOfType(Listener.class)
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
+        context.getBeansOfType(TabExecutor.class, Qualifiers.byStereotype(McCommand.class))
+                        .forEach(command -> {
+                            var beanDefinition = context.getBeanDefinition(command.getClass());
+                            var commandName = beanDefinition.stringValue(McCommand.class).orElseThrow();
+                            var pluginCommand = getServer().getPluginCommand(commandName);
+                            if (pluginCommand == null) {
+                                throw new IllegalArgumentException("Command with name %s not found. You probably forgot to register it in the plugin.yml"
+                                        .formatted(commandName));
+                            }
+                            pluginCommand.setExecutor(command);
+                            pluginCommand.setTabCompleter(command);
+                        });
 
 
         publishEvent(new OnEnableEvent(), OnEnableEvent.class);
