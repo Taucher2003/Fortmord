@@ -1,7 +1,6 @@
 package club.devcord.gamejam.devmarkt_working_group.fortmord.level;
 
 import club.devcord.gamejam.devmarkt_working_group.fortmord.LevelCalculator;
-import com.google.common.util.concurrent.AtomicDouble;
 import jakarta.inject.Singleton;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -17,12 +16,12 @@ import org.bukkit.inventory.SmithingRecipe;
 import org.bukkit.inventory.StonecuttingRecipe;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Singleton
@@ -41,7 +40,7 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
         put(++index, Material.ACACIA_WOOD, Material.BIRCH_WOOD, Material.DARK_OAK_WOOD, Material.JUNGLE_WOOD, Material.MANGROVE_WOOD, Material.OAK_WOOD, Material.SPRUCE_WOOD);
         put(++index, Material.COBBLESTONE, Material.COBBLED_DEEPSLATE);
         put(++index, Material.LEATHER);
-        put(++index, Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE, Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE);
+        put(++index, Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE, Material.RAW_IRON, Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE, Material.RAW_GOLD);
         put(++index, Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE);
     }
 
@@ -75,29 +74,40 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
         return result;
     }
 
-    private double calculateBase(Material material, Set<Material> knownNodes) {
+    private double calculateBase(Material material) {
         if(recipeCache.containsKey(material)) {
             return recipeCache.get(material);
         }
 
+        var result = calculateBase(material, EnumSet.noneOf(Material.class));
+        recipeCache.put(material, result);
+        return result;
+    }
+
+    private double calculateBase(Material material, Set<Material> knownNodes) {
         if(knownNodes.contains(material)) {
             return 0D;
         }
         knownNodes.add(material);
 
-        var result = new AtomicDouble();
-
-        server.getRecipesFor(new ItemStack(material))
+        return server.getRecipesFor(new ItemStack(material))
                 .stream()
-                .limit(1)
+                .filter(recipe -> {
+                    var name = material.name().replace("_INGOT", "_BLOCK");
+                    var blockMaterial = Material.getMaterial(name);
+                    if (recipe instanceof ShapelessRecipe shapelessRecipe) {
+                        return shapelessRecipe.getChoiceList()
+                                .stream()
+                                .noneMatch(recipeChoice -> recipeChoice.test(new ItemStack(blockMaterial)));
+                    }
+                    return true;
+                })
+                .sorted((recipe, recipe1) -> recipe.equals(recipe1) ? 0 : recipe instanceof CookingRecipe<?> ? -1 :  1)
                 .flatMap(this::ingredientsForRecipe)
-                .peek(m -> result.addAndGet(BASE_LEVELS.getOrDefault(m, 0.1)))
-                .map(m -> calculateBase(m, knownNodes))
-                .forEach(result::addAndGet);
-
-        recipeCache.put(material, result.get());
-
-        return result.get();
+                .mapToDouble(m -> calculateBase(m.getType(), knownNodes) * m.getAmount())
+                .filter(value -> value > 0)
+                .limit(1)
+                .sum();
     }
 
     private Stream<Material> ingredientsForRecipe(Recipe recipe){
@@ -133,7 +143,7 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
         return Stream.empty();
     }
 
-    private Stream<Material> itemstackToMaterialList(ItemStack stack) {
-        return IntStream.range(0, stack.getAmount()).mapToObj(ignored -> stack.getType());
+    public Map<Material, Double> getCache() {
+        return Collections.unmodifiableMap(recipeCache);
     }
 }

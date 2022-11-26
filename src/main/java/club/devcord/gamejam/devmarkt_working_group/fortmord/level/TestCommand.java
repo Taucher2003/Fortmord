@@ -14,10 +14,12 @@ import org.jetbrains.annotations.NotNull;
 public class TestCommand implements CommandExecutor {
 
     private final LevelCalculator calculator;
+    private final InventoryLevelCalculator inventoryLevelCalculator;
     private final ApplicationContext context;
 
-    public TestCommand(LevelCalculator calculator, ApplicationContext context) {
+    public TestCommand(LevelCalculator calculator, InventoryLevelCalculator inventoryLevelCalculator, ApplicationContext context) {
         this.calculator = calculator;
+        this.inventoryLevelCalculator = inventoryLevelCalculator;
         this.context = context;
     }
 
@@ -28,6 +30,11 @@ public class TestCommand implements CommandExecutor {
             var level = calculator.calculate(player);
             var endCalculate = System.currentTimeMillis();
             player.sendMessage(level + " | " + (endCalculate - startCalculate) + "ms");
+
+            if(args.length == 1 && "cache".equals(args[0])) {
+                player.sendMessage(inventoryLevelCalculator.getCache().toString());
+                return false;
+            }
 
             if(args.length == 1) {
                 var event = new LevelChangeEvent(player, Integer.parseInt(args[0]));
