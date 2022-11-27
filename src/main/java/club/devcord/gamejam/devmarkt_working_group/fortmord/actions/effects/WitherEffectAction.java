@@ -23,7 +23,7 @@ public class WitherEffectAction extends AbstractLevelAction {
 
     private void apply() {
         if(random(0, 257) > descLevel()) {
-            player().addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 40, 1));
+            player().addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100, 1));
         }
     }
 }

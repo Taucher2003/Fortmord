@@ -23,7 +23,7 @@ public class WeaknessEffectAction extends AbstractLevelAction {
 
     private void apply() {
         if(random(0, 257) > descLevel()) {
-            player().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100, 1));
+            player().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 50, 0));
         }
     }
 }
