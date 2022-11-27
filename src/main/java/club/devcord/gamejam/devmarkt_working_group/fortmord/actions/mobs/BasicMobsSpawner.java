@@ -15,15 +15,19 @@ import java.util.concurrent.ThreadLocalRandom;
 @LevelAction(value = 1, levelBound = true)
 public class BasicMobsSpawner extends AbstractLevelAction {
 
-    public static final Map<EntityType, Integer> BASIC_MOBS = Map.of(
-            EntityType.ZOMBIE, 20,
-            EntityType.SPIDER, 15,
-            EntityType.SKELETON, 25,
-            EntityType.WITCH, 15,
-            EntityType.CREEPER ,5
+    private record MobChance(int percent, int level) { MobChance(int percent) { this(percent, 1); } }
+
+    public static final Map<EntityType, MobChance> BASIC_MOBS = Map.of(
+            EntityType.BLAZE, new MobChance(2, 100),
+            EntityType.PILLAGER, new MobChance(2, 75),
+            EntityType.ZOMBIE, new MobChance(20),
+            EntityType.SPIDER, new MobChance(15),
+            EntityType.SKELETON, new MobChance(25),
+            EntityType.WITCH, new MobChance(15),
+            EntityType.CREEPER , new MobChance(5)
     );
 
-    public BasicMobsSpawner(@Parameter Player player,  @Parameter int level, FortMord fortMord) {
+    public BasicMobsSpawner(@Parameter Player player, @Parameter int level, FortMord fortMord) {
         super(player, level, fortMord);
     }
 
@@ -36,12 +40,10 @@ public class BasicMobsSpawner extends AbstractLevelAction {
     private Optional<EntityType> chooseEntity() {
         for (var entry : BASIC_MOBS.entrySet()) {
             var random = ThreadLocalRandom.current().nextInt(0, 101);
-            if (random <= entry.getValue()) {
+            if (random <= entry.getValue().percent() && level() >= entry.getValue().level()) {
                 return Optional.of(entry.getKey());
             }
         }
         return Optional.empty();
     }
-
-
 }
