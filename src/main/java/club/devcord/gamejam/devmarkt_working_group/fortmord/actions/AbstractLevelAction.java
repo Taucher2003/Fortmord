@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitTask;
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.LongSupplier;
 
 @Introspected
 public abstract class AbstractLevelAction {
@@ -46,6 +47,15 @@ public abstract class AbstractLevelAction {
         var bukkitTask = fortMord.getServer().getScheduler().runTaskTimer(fortMord, runnable, delay, period);
         tasks.add(bukkitTask);
         return bukkitTask;
+    }
+
+    public void runTaskTimer(Runnable runnable, long delay, LongSupplier period) throws IllegalArgumentException {
+        Runnable restarter = () -> {
+            runnable.run();
+            runTaskTimer(runnable, period.getAsLong(), period);
+        };
+
+        tasks.add(fortMord.getServer().getScheduler().runTaskLater(fortMord, restarter, delay));
     }
 
     @PreDestroy
