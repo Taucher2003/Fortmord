@@ -21,7 +21,7 @@ public abstract class AbstractLevelAction {
 
     private int level;
 
-    public AbstractLevelAction(@Parameter Player player, FortMord fortMord, int level) {
+    public AbstractLevelAction(@Parameter Player player, int level, FortMord fortMord) {
         this.player = player;
         this.fortMord = fortMord;
         this.level = level;
