@@ -24,7 +24,7 @@ public class BasicMobsSpawner extends AbstractLevelAction {
     );
 
     public BasicMobsSpawner(@Parameter Player player,  @Parameter int level, FortMord fortMord) {
-        super(player, fortMord,level);
+        super(player, level, fortMord);
     }
 
     @PostConstruct

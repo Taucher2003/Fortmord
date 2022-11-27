@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitTask;
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.LongSupplier;
 
 @Introspected
@@ -41,6 +42,14 @@ public abstract class AbstractLevelAction {
 
     public void level(int level) {
         this.level = level;
+    }
+
+    public int descLevel() {
+        return 257 - level();
+    }
+
+    public long random(int start, int to) {
+        return ThreadLocalRandom.current().nextLong(start, ++to);
     }
 
     public BukkitTask runTaskTimer(Runnable runnable, long delay, long period) throws IllegalArgumentException {

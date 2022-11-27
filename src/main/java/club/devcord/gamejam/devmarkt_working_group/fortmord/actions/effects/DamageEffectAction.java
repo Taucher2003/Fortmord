@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @LevelAction(value = 50, levelBound = true)
 public class DamageEffectAction extends AbstractLevelAction {
     public DamageEffectAction(@Parameter Player player, FortMord fortMord, @Parameter int level) {
-        super(player, fortMord, level);
+        super(player, level, fortMord);
     }
 
     @PostConstruct
