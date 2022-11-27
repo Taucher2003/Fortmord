@@ -4,29 +4,26 @@ import club.devcord.gamejam.devmarkt_working_group.fortmord.FortMord;
 import club.devcord.gamejam.devmarkt_working_group.fortmord.actions.AbstractLevelAction;
 import club.devcord.gamejam.devmarkt_working_group.fortmord.actions.LevelAction;
 import io.micronaut.context.annotation.Parameter;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import javax.annotation.PostConstruct;
 
-@LevelAction(value = 25, levelBound = false)
-public class HealthLimiterAction extends AbstractLevelAction {
-    private final Server server;
-
-    public HealthLimiterAction(@Parameter Player player, FortMord fortMord, Server server, @Parameter int level) {
+@LevelAction(value = 5, levelBound = false)
+public class HungerEffectAction extends AbstractLevelAction {
+    public HungerEffectAction(@Parameter Player player, @Parameter int level, FortMord fortMord) {
         super(player, level, fortMord);
-        this.server = server;
     }
 
     @PostConstruct
     void start() {
-        runTaskTimer(this::apply, 5, () -> random(40, 200));
+        runTaskTimer(this::apply, 5, () -> random(20, 30) * 20);
     }
 
     private void apply() {
         if(random(0, 257) > descLevel()) {
-            player().setMaxHealth(random(14, 18));
-            server.getScheduler().runTaskLater(fortMord(), player()::resetMaxHealth, random(40, 60));
+            player().addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 50, 1));
         }
     }
 }

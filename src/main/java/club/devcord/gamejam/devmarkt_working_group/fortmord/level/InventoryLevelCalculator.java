@@ -38,9 +38,9 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
     private void setupBaseWeights() {
         put(Material.ACACIA_WOOD, Material.BIRCH_WOOD, Material.DARK_OAK_WOOD, Material.JUNGLE_WOOD, Material.MANGROVE_WOOD, Material.OAK_WOOD, Material.SPRUCE_WOOD,
                 Material.COBBLESTONE, Material.COBBLED_DEEPSLATE,
-                Material.LEATHER);
+                Material.LEATHER, Material.STRING, Material.ROTTEN_FLESH, Material.FEATHER, Material.BONE, Material.GUNPOWDER);
 
-        put(Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE, Material.RAW_IRON, Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE, Material.RAW_GOLD);
+        put(Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE, Material.RAW_IRON, Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE, Material.RAW_GOLD, Material.REDSTONE_ORE);
 
         put(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE);
 
@@ -111,7 +111,6 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
 
     private Stream<ItemStack> ingredientsForRecipe(Recipe recipe){
         if(recipe instanceof CookingRecipe<?> cookingRecipe) {
-            server.broadcastMessage(cookingRecipe.getInputChoice().getItemStack().toString());
             return Stream.of(cookingRecipe.getInputChoice().getItemStack());
         }
         if(recipe instanceof MerchantRecipe merchantRecipe) {
