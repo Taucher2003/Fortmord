@@ -34,7 +34,7 @@ public class LevelActionManager {
         for (var action : applicationContext.getBeanDefinitions(AbstractLevelAction.class)) {
             var actionClass = action.getBeanType();
             var requiredLevel = action.getAnnotation(LevelAction.class).intValue().orElseThrow();
-            var levelBound = action.getAnnotation(LevelAction.class).booleanValue("levelBound").orElseThrow();
+            var levelBound = action.getAnnotation(LevelAction.class).booleanValue("levelBound").orElse(false);
             var presentAction = findAction(player, action.getBeanType());
 
             if (level >= requiredLevel) {
