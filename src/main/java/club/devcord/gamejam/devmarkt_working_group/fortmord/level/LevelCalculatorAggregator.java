@@ -17,9 +17,10 @@ public class LevelCalculatorAggregator implements LevelCalculator {
 
     @Override
     public int calculate(Player player) {
-        return Arrays.stream(calculators)
+        var num = Arrays.stream(calculators)
                 .map(calculator -> calculator.calculate(player) * calculator.weight())
                 .reduce(0D, Double::sum)
-                .intValue() & 0xFF;
+                .intValue();
+        return Math.min(num, 256);
     }
 }

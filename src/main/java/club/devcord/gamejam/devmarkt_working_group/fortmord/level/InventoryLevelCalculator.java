@@ -27,28 +27,31 @@ import java.util.stream.Stream;
 @Singleton
 public class InventoryLevelCalculator implements LevelCalculator.Inner {
     private final Server server;
+    private double setupCounter = 1;
     private final Map<Material, Double> recipeCache = new EnumMap<>(Material.class);
 
     public InventoryLevelCalculator(Server server) {
         this.server = server;
-
-        var index = 0D;
-        put(++index, Material.ACACIA_WOOD, Material.BIRCH_WOOD, Material.DARK_OAK_WOOD, Material.JUNGLE_WOOD, Material.MANGROVE_WOOD, Material.OAK_WOOD, Material.SPRUCE_WOOD);
-        put(++index, Material.COBBLESTONE, Material.COBBLED_DEEPSLATE);
-        put(++index, Material.RABBIT_HIDE);
-        put(++index, Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE, Material.RAW_IRON, Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE, Material.RAW_GOLD);
-        put(++index, Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE);
-        put(++index, Material.ACACIA_WOOD, Material.BIRCH_WOOD, Material.DARK_OAK_WOOD, Material.JUNGLE_WOOD, Material.MANGROVE_WOOD, Material.OAK_WOOD, Material.SPRUCE_WOOD);
-        put(++index, Material.COBBLESTONE, Material.COBBLED_DEEPSLATE);
-        put(++index, Material.LEATHER);
-        put(++index, Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE, Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE);
-        put(++index, Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE);
-        put(++index, Material.ANCIENT_DEBRIS);
+        setupBaseWeights();
     }
-    private void put(Double level, Material... materials) {
+
+    private void setupBaseWeights() {
+        put(Material.ACACIA_WOOD, Material.BIRCH_WOOD, Material.DARK_OAK_WOOD, Material.JUNGLE_WOOD, Material.MANGROVE_WOOD, Material.OAK_WOOD, Material.SPRUCE_WOOD,
+                Material.COBBLESTONE, Material.COBBLED_DEEPSLATE,
+                Material.LEATHER);
+
+        put(Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE, Material.RAW_IRON, Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE, Material.RAW_GOLD);
+
+        put(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE);
+
+        put(Material.ANCIENT_DEBRIS);
+    }
+
+    private void put(Material... materials) {
         for (var material : materials) {
-            recipeCache.put(material, level);
+            recipeCache.put(material, setupCounter);
         }
+        setupCounter++;
     }
 
     @Override
@@ -65,11 +68,8 @@ public class InventoryLevelCalculator implements LevelCalculator.Inner {
     }
 
     private double calculateItem(ItemStack item) {
-        var result = calculateBase(item.getType()) * item.getAmount();
-
-        result += item.getEnchantments().values().stream().mapToDouble(level -> level * 0.5).reduce(0, Double::sum);
-
-        return result;
+        return calculateBase(item.getType()) * item.getAmount() +
+                item.getEnchantments().values().stream().mapToDouble(level -> level * 0.5).sum();
     }
 
     private double calculateBase(Material material) {

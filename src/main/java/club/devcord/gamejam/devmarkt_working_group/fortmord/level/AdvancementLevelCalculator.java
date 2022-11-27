@@ -28,7 +28,7 @@ public class AdvancementLevelCalculator implements LevelCalculator.Inner {
 
     @Override
     public double weight() {
-        return 0.02;
+        return 0.05;
     }
 
     private double calculateAdvancement(Advancement advancement) {
