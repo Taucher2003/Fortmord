@@ -26,7 +26,8 @@ public class BlindnessEffectAction extends AbstractLevelAction {
                 return;
             }
             var duration = ((int) (random(3, 15) * 20));
-            player().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration, 2));
+            var amplifier = ((int) random(0, 2));
+            player().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration, amplifier));
         }, 5, () -> (descLevel() + 5) * random(0, 15) * 20);
     }
 }

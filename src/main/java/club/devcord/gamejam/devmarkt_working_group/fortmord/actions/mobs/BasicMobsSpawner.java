@@ -18,7 +18,7 @@ public class BasicMobsSpawner extends AbstractLevelAction {
     private record MobChance(int percent, int level) { MobChance(int percent) { this(percent, 1); } }
 
     public static final Map<EntityType, MobChance> BASIC_MOBS = Map.of(
-            EntityType.BLAZE, new MobChance(5, 100),
+            EntityType.BLAZE, new MobChance(2, 100),
             EntityType.PILLAGER, new MobChance(5, 75),
             EntityType.ZOMBIE, new MobChance(20),
             EntityType.SPIDER, new MobChance(15),
